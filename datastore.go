@@ -1,6 +1,7 @@
 package leveldb
 
 import (
+	"metrics"
 	"os"
 	"path/filepath"
 	"sync"
@@ -57,6 +58,10 @@ func NewDatastore(path string, opts *Options) (*Datastore, error) {
 		accessor: &accessor{ldb: db, syncWrites: true, closeLk: new(sync.RWMutex)},
 		DB:       db,
 		path:     path,
+	}
+
+	if metrics.CMD_FastSync {
+		ds.accessor.syncWrites = false
 	}
 	return &ds, nil
 }
